@@ -34,7 +34,7 @@ def show_afterparty_form():
 def find_afterparties():
     """Search for afterparties on Eventbrite"""
 
-    keyword = request.args.get('keyword', '')
+    keyword = request.args.get('keyword', '')  #'' = default
     postalcode = request.args.get('zipcode', '')
     radius = request.args.get('radius', '')
     unit = request.args.get('unit', '')
@@ -48,9 +48,9 @@ def find_afterparties():
                 'unit': unit,
                 'sort': sort
             }
-
    
-    res = requests.get(url, params=payload)  #res is a Response obj.
+
+    res = requests.get(url, params=payload)  #res is a Response obj. / this is an api request to the url
     #so res.url is the url for the events + my API, so that allows me to extract the data from that website
 
     data = res.json()  #making all the data into a dictionary
@@ -74,7 +74,7 @@ def find_afterparties():
     #   search results
 
     if '_embedded' in data:
-        events = data['_embedded']['events']
+        events = data['_embedded']['events'] 
     else:
         events = []
 
