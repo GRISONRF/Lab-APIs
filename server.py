@@ -5,10 +5,6 @@ import os
 import requests
 
 
-
-#
-#
-
 app = Flask(__name__)
 app.secret_key = 'SECRETSECRETSECRET'
 
@@ -45,23 +41,31 @@ def find_afterparties():
     sort = request.args.get('sort', '')
 
     url = 'https://app.ticketmaster.com/discovery/v2/events'
-    payload = {'apikey': ''}
+    payload = {'apikey': API_KEY,
+                'keyword': keyword,
+                'postalcode': postalcode,
+                'radius': radius,
+                'unit': unit,
+                'sort': sort
+            }
 
-    # TODO: Make a request to the Event Search endpoint to search for events
-    res = requests.get('https://app.ticketmaster.com/discovery/v2/events', params=payload)
+   
+    res = requests.get(url, params=payload)  #res is a Response obj.
+    #so res.url is the url for the events + my API, so that allows me to extract the data from that website
 
-    ticket_events = res.json()
-    events = ticket_events['events']
-    events = events[0]
-    results = events
+    data = res.json()  #making all the data into a dictionary
 
-    for event in results:
-        event_name = results.get(event)
-        print(f'{event_name}: {results}')
+    #events = data['_embedded']['events']   #getting the list os events out of 'data' and storing in a variable.
+    #events is a LIST of events.
 
+    #event = events[0] #getting the FIRST event out of the list and storing in a variable
+
+    #event.keys() #getting the keys of this event which is a dict.
+    #now we can search the event name, ot dates, etc. by: event['name'] oe event['date']
+    
+    #params is now igual to whatever the user inputed from the form
+    
     # - Use form data from the user to populate any search parameters
-
-
     # - Make sure to save the JSON data from the response to the `data`
     #   variable so that it can display on the page. This is useful for
     #   debugging purposes!
@@ -69,9 +73,10 @@ def find_afterparties():
     # - Replace the empty list in `events` with the list of events from your
     #   search results
 
-    data = {'Test': ['This is just some test data'],
-            'page': {'totalElements': 1}}
-    events = []
+    if '_embedded' in data:
+        events = data['_embedded']['events']
+    else:
+        events = []
 
     return render_template('search-results.html',
                            pformat=pformat,
